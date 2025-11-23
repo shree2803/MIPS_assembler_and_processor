@@ -1,351 +1,446 @@
-#include<stdcpp.h>
+#include <bits/stdc++.h>
 using namespace std;
-string sliceString(string s,int a,int b){
-    string k=s.substr(31-a,a-b+1);
-    return k;
-}
-map < string, string > registers =
-{{"00001","$at"},{"00000","$zero"},{"01000","$t0"},{"01001","$t1"},{"01010","$t2"},{"01011","$t3"},{"01100","$t4"},{"01101","$t5"},{"01110","$t6"},{"01111","$t7"},{"10000","$s0"},{"10001","$s1"},{ "10010","$s2"},{ "10011","$s3",},{"10100","$s4"},{ "10101","$s5"},{ "10110","$s6"},{"10111","$s7"},{ "11000","$t8"},{ "11001","$t9"}};
-vector<pair<string,string> >instrMem1={{"4194380", "00000000000010110100000000100001"},
-    {"4194384", "00000000000000001011100000100001"},
-    {"4194388", "00100000000101100000000000000001"},
-    {"4194392", "00000001001101101011000000100010"},
-    {"4194396", "00010010111010010000000000000110"},
-    {"4194400", "10001101010101010000000000000000"},
-    {"4194404", "10101101011101010000000000000000"},
-    {"4194408", "00100001010010100000000000000100"},
-    {"4194412", "00100001011010110000000000000100"},
-    {"4194416", "00100010111101110000000000000001"},
-    {"4194420", "00001000000100000000000000010111"},
-    {"4194424", "00000000000010000101100000100001"}, 
-    {"4194428", "00000000000000001011100000100001"},
-    {"4194432", "00010010111101100000000000011000"}, 
-    {"4194436", "00000000000101110110000000100001"},
-    {"4194440", "00100010111011010000000000000001"},
-    {"4194444", "00010001101010010000000000001011"},
-    {"4194448", "00000000000011001100000010000000"},
-    {"4194452", "00000001011110001100000000100000"},  
-    {"4194456", "10001111000100000000000000000000"},
-    {"4194460", "00000000000011011100100010000000"},
-    {"4194464", "00000011001010111100100000100000"},
-    {"4194468", "10001111001100010000000000000000"},
-    {"4194472", "00000010001100000000100000101010"},
-    {"4194476", "00010100001000000000000000000001"},
-    {"4194480", "00000000000011010110000000100001"},
-    {"4194484", "00100001101011010000000000000001"},
-    {"4194488", "00001000000100000000000000100011"},
-    {"4194492", "00000000000011000111100010000000"},
-    {"4194496", "00000001011011110111100000100000"},
-    {"4194500", "00000000000101110111000010000000"},
-    {"4194504", "00000001110010110111000000100000"},
-    {"4194508", "10001101111100100000000000000000"},
-    {"4194512", "10001101110101000000000000000000"},
-    {"4194516", "10101101110100100000000000000000"},
-    {"4194520", "10101101111101000000000000000000"},
-    {"4194524", "00100010111101110000000000000001"},
-    {"4194528", "00001000000100000000000000100000"},
-    {"4194532", "00000000000010000101100000100001"}};
-    vector<pair<string,string> >instrMem2=
-{ 
-     {"4194356","10001111000010000000000000000000"},  
-     {"4194360","00100000000010110000000000000001"},  
-     {"4194364","00000000000010000100100000100001"}, 
-     {"4194368","00100001000010101111111111111111"},  
-     {"4194372","00010001010000000000000000000111"}, 
-     {"4194376","00100001010011000000000000000000"}, 
-     {"4194380","00100001001011010000000000000000"}, 
-     {"4194384","00100001010010101111111111111111"},  
-     {"4194388","00010001100010111111111111111011"},  
-     {"4194392","00100001100011001111111111111111"},  
-     {"4194396","00000001001011010100100000100000"},  
-     {"4194400","00010000000000001111111111111100"},  
-     {"4194404","10101111001010010000000000000000"}
- };
-vector<pair<string,string> >regValues={{"$at","0"},{"$zero", "00000"},{"$t0","0"},{"$t1", (bitset<32>(5)).to_string()},{"$t2", (bitset<32>(268501184)).to_string()},{"$t3", (bitset<32>(268501216)).to_string()},{"$t4", "0"},{"$t5", "0"},{"$t6", "0"},{"$t7", "0"},{"$s0", "0"},{"$s1", "0"},{"$s2", "0"},{"$s3", "0"},{"$s4", "0"},{"$s5", "0"},{"$s6", "0"},{"$s7", "0"},{"$t8", (bitset<32>(268501184)).to_string()},{"$t9", (bitset<32>(268501216)).to_string()}};//modify
-string add_in="268501184";
-vector<pair<string,string> > dataMem={{"268501184",(bitset<32>(5)).to_string()},{"268501188",(bitset<32>(52)).to_string()},{"268501192",(bitset<32>(-11)).to_string()},{"268501196",(bitset<32>(0)).to_string()},{"268501200",(bitset<32>(23)).to_string()},{"268501204",""},{"268501208",""},{"268501212",""},{"268501216",""},{"268501220",""},{"268501224",""},{"268501228",""},{"268501232",""}};//modify
-int binaryToDecimal(const std::string& binaryStr) {
-    bitset<32> bits(binaryStr); // Assuming a 32-bit binary string, adjust as needed
-    return bits.to_ulong();
-}
-void regFile(string read1,string read2,string writeData,string writeReg,string& data1,string& data2,int RegWrite ){
-    auto it1=registers.find(read1);
-    auto IT1=it1->second; 
-    auto it2=registers.find(read2);
-    auto IT2=it2->second; 
-    for(int i=0;i<regValues.size();i++){
-        if(regValues[i].first==IT1)
-        data1=regValues[i].second;
-    }
-    for(int i=0;i<regValues.size();i++){
-        if(regValues[i].first==IT2)
-        data2=regValues[i].second; 
-    }
-    if(RegWrite==1){
-    auto it=registers.find(writeReg);
-    auto IT=it->second;
-    for(int i=0;i<regValues.size();i++){
-        if(regValues[i].first==IT){
-        regValues[i].second=writeData;
-    }
-    }
-    }
-}
 
-string opcode(string instr){
-    return sliceString(instr,31,26);
-}
-string rfunction(string instr){
-    return sliceString(instr,5,0);
-}
-string shamt(string instr){
-    return sliceString(instr,10,6);
-}
-void ALUcontrol(string instr,string ALUop,string& out){
-    if(opcode(instr)=="100011"){
-        out="010";
+enum InstrType { I_NOP, I_ADD, I_SUB, I_ADDI, I_LW, I_SW, I_BEQ, I_HALT };
+
+// human-friendly instruction representation
+struct Instr {
+    InstrType type;
+    int rd, rs, rt;
+    int imm; // immediate or branch offset
+    Instr() : type(I_NOP), rd(0), rs(0), rt(0), imm(0) {}
+    static Instr halt() { Instr i; i.type = I_HALT; return i; }
+};
+
+// Pipeline register structures
+struct IF_ID {
+    int pc;
+    Instr instr;
+    bool bubble;
+    IF_ID() : pc(0), instr(), bubble(true) {}
+};
+
+struct ID_EX {
+    int pc;
+    Instr instr;
+    int rs_val, rt_val;
+    int rd, rs, rt, imm;
+    bool bubble;
+    // control/simple signals
+    bool isRegWrite, isMemRead, isMemWrite, isBranch, isALUSrc, isMemToReg;
+    ID_EX() : pc(0), instr(), rs_val(0), rt_val(0), rd(0), rs(0), rt(0), imm(0), bubble(true),
+              isRegWrite(false), isMemRead(false), isMemWrite(false), isBranch(false),
+              isALUSrc(false), isMemToReg(false) {}
+};
+
+struct EX_MEM {
+    int pc;
+    Instr instr;
+    int alu_result;
+    int rt_val; // for store
+    int rd; // destination reg index
+    bool bubble;
+    bool isRegWrite, isMemRead, isMemWrite, isMemToReg;
+    EX_MEM() : pc(0), instr(), alu_result(0), rt_val(0), rd(0), bubble(true),
+               isRegWrite(false), isMemRead(false), isMemWrite(false), isMemToReg(false) {}
+};
+
+struct MEM_WB {
+    int pc;
+    Instr instr;
+    int mem_data;
+    int alu_result;
+    int rd;
+    bool bubble;
+    bool isRegWrite, isMemToReg;
+    MEM_WB() : pc(0), instr(), mem_data(0), alu_result(0), rd(0), bubble(true),
+               isRegWrite(false), isMemToReg(false) {}
+};
+
+// Simple CPU state
+struct CPU {
+    vector<Instr> imem;
+    vector<int> dmem;
+    int pc;
+    int regs[32];
+    bool halted;
+
+    IF_ID if_id;
+    ID_EX id_ex;
+    EX_MEM ex_mem;
+    MEM_WB mem_wb;
+
+    // temporary new pipeline regs used to update at clock edge
+    IF_ID new_if_id;
+    ID_EX new_id_ex;
+    EX_MEM new_ex_mem;
+    MEM_WB new_mem_wb;
+
+    // forwarding signals (values to forward if applicable)
+    int forwardA_val; bool forwardA_used;
+    int forwardB_val; bool forwardB_used;
+
+    CPU(int imem_size=256, int dmem_size=1024) {
+        imem.resize(imem_size);
+        dmem.assign(dmem_size, 0);
+        pc = 0;
+        memset(regs, 0, sizeof(regs));
+        halted = false;
     }
-    else if(opcode(instr)=="101011"){
-        out="010";
+
+    // utility to load a simple program (vector of Instr)
+    void load_program(const vector<Instr>& prog) {
+        for (size_t i=0;i<prog.size() && i<imem.size();++i) imem[i] = prog[i];
     }
-    else if(opcode(instr)=="000100"){
-        out="011";
-    }
-    else if(opcode(instr)=="001000"){
-        out="010";
-    }
-    else if(rfunction(instr)=="100000"){
-        out="010";
-    }
-    else if(rfunction(instr)=="100010"){
-        out="011";
-    }
-    else if(rfunction(instr)=="100100"){
-        out="000";
-    }
-    else if(rfunction(instr)=="100101"){
-        out="001";
-    }
-    else if(rfunction(instr)=="101010"){
-        out="100";
-    }
-    else if(rfunction(instr)=="100001"){
-        out="010";
-    }
-    else if(rfunction(instr)=="101010"){
-        out="100";}//slt
-    else if(rfunction(instr)=="000000"){
-        out="101";}//sll
-}
-void ALU(string controlInput,string op1,string op2,int* Zero,string& ALUresult,string instr){
-    int result;
-    string sh_amt=shamt(instr);
-    int k=binaryToDecimal(sh_amt);
-    if(controlInput=="000"){
-        ALUresult=(bitset<32>(op1) & bitset<32>(op2)).to_string();
-    }
-    if(controlInput=="001"){
-        ALUresult=(bitset<32>(op1) | bitset<32>(op2)).to_string();
-    }
-    if(controlInput=="010"){
-        result=(binaryToDecimal(op1) + binaryToDecimal(op2));
-        ALUresult=bitset<32>((result)).to_string();
-    }
-    if(controlInput=="011"){
-        result=(binaryToDecimal(op1) - binaryToDecimal(op2));
-        ALUresult=bitset<32>((result)).to_string();
-    }
-    if(controlInput=="100"){
-        if(binaryToDecimal(op1)<binaryToDecimal(op2)){
-            ALUresult=(bitset<32>(1)).to_string();
+
+    // helper to print instruction (brief)
+    string instr_str(const Instr &in) {
+        switch (in.type) {
+            case I_ADD: return "ADD";
+            case I_SUB: return "SUB";
+            case I_ADDI: return "ADDI";
+            case I_LW: return "LW";
+            case I_SW: return "SW";
+            case I_BEQ: return "BEQ";
+            case I_NOP: return "NOP";
+            case I_HALT: return "HALT";
+            default: return "UNK";
         }
-        else
-        ALUresult=(bitset<32>(0)).to_string();
     }
-    if(controlInput=="101"){
-       result=(binaryToDecimal(op2)<<k);
-       ALUresult=(bitset<32>(result)).to_string();
+
+    // IF stage: fetch instruction (no stall handling here, handled in control)
+    void IF_stage(bool stall) {
+        if (halted) {
+            new_if_id.bubble = true;
+            return;
+        }
+
+        if (stall) {
+            // hold IF/ID (i.e., insert bubble in IF_ID by not updating it)
+            // We'll set new_if_id to current if_id to freeze it (effectively stalling PC)
+            new_if_id = if_id;
+            return;
+        }
+
+        // normal fetch
+        Instr fetched = imem[pc];
+        new_if_id.instr = fetched;
+        new_if_id.pc = pc;
+        new_if_id.bubble = false;
+        // advance PC (we'll possibly overwrite PC on branch resolution in ID)
+        pc += 1;
     }
-    if(ALUresult==(bitset<32>(0)).to_string()){
-        *Zero=1;
-    }
-    else
-    *Zero=0;
-}
 
-string signExtend(string s){
-    char k=s[0];
-    string p="";
-    if(k=='0')
-    return bitset<32>((binaryToDecimal(s))).to_string();
-    else
-    for(int i=0;i<16;i++){
-        p+="1";
-    }
-    return p+s;
-}
+    // ID stage: decode, read registers, produce control signals
+    // returns whether a stall is requested by hazard detection unit (load-use case)
+    bool ID_stage(bool &flush_next_if) {
+        flush_next_if = false;
+        // default set new_id_ex bubble, will fill if not bubble
+        new_id_ex = ID_EX();
+        if (if_id.bubble) { new_id_ex.bubble = true; return false; }
+        Instr ins = if_id.instr;
+        // HALT handling: pass HALT down
+        if (ins.type == I_HALT) {
+            new_id_ex.instr = ins;
+            new_id_ex.bubble = false;
+            // set signals to zero
+            return false;
+        }
 
-void mux(int s0,string i0,string i1,string& out){
-    if(s0==1)
-    out=i1;
-    if(s0==0)
-    out=i0;
-}
+        // decode into control signals & fields
+        ID_EX nid;
+        nid.bubble = false;
+        nid.instr = ins;
+        nid.pc = if_id.pc;
+        nid.rs = ins.rs;
+        nid.rt = ins.rt;
+        nid.rd = ins.rd;
+        nid.imm = ins.imm;
+        // register reads (note: forwarding may override in EX)
+        nid.rs_val = regs[nid.rs];
+        nid.rt_val = regs[nid.rt];
 
-string InstrMem(string PC,vector<pair<string,string> >&instrMem){
-    for(int i=0;i<instrMem.size();i++){
-        if(instrMem[i].first==PC)
-        return instrMem[i].second;
-    }
-    return "";
-}
+        // simple control generation
+        switch (ins.type) {
+            case I_ADD:
+            case I_SUB:
+                nid.isRegWrite = true;
+                nid.isALUSrc = false;
+                nid.isMemRead = false;
+                nid.isMemWrite = false;
+                nid.isMemToReg = false;
+                break;
+            case I_ADDI:
+                nid.isRegWrite = true;
+                nid.isALUSrc = true;
+                nid.isMemRead = false;
+                nid.isMemWrite = false;
+                nid.isMemToReg = false;
+                break;
+            case I_LW:
+                nid.isRegWrite = true;
+                nid.isALUSrc = true;
+                nid.isMemRead = true;
+                nid.isMemWrite = false;
+                nid.isMemToReg = true;
+                break;
+            case I_SW:
+                nid.isRegWrite = false;
+                nid.isALUSrc = true;
+                nid.isMemRead = false;
+                nid.isMemWrite = true;
+                nid.isMemToReg = false;
+                break;
+            case I_BEQ:
+                nid.isBranch = true;
+                nid.isRegWrite = false;
+                nid.isMemRead = false;
+                nid.isMemWrite = false;
+                break;
+            case I_NOP:
+                // nothing
+                break;
+            default:
+                break;
+        }
 
-string shiftLeft(string s){
-    return sliceString(s,29,0)+"00";
-}
-
-
-
-string fetch(string PC,vector<pair<string,string> >& instrMem){
-    return InstrMem(PC,instrMem);
-}
-
-void decode(string instr,string& data1,string& data2,string& in1,int RegDest,string writeData,int RegWrite){
-    in1 = signExtend(sliceString(instr,15,0));
-    string out="";
-    mux(RegDest,sliceString(instr,20,16),sliceString(instr,15,11),out);
-    regFile(sliceString(instr,25,21),sliceString(instr,20,16),writeData,out,data1,data2,RegWrite);
-}
-
-void execute(int* zero,string sign_out,string data1,string data2,string ALUop,int ALUsrc,int* Zero,string& ALUresult,string PC,int branch,string instr,int jump,string& PC_bar){
-    //pass the value of in1 from decode stage sugn extend output and data1 and data2
-    string out="",ALU_out="";
-    mux(ALUsrc,data2,sign_out,out);
-    ALUcontrol(instr,ALUop,ALU_out);
-    ALU(ALU_out,data1,out,Zero,ALUresult,instr);
-    string op1=shiftLeft(sign_out);
-    PC=bitset<32>(stoi(PC)+4).to_string();
-    string in1="";
-    string s=shiftLeft(sliceString(instr,25,0));
-    s="0000"+s;
-    ALU("010",op1,PC,zero,in1,instr);
-    mux(branch&&(*Zero),PC,in1,PC);
-    mux(jump,PC,s,PC_bar);
-}
-
-void Mem(string address,string writeData, string& readData,int MemWrite,int MemRead){
-    if(MemRead==1 && MemWrite==0){
-        for(int i=0;i<dataMem.size();i++){
-            if(dataMem[i].first==to_string((binaryToDecimal(address)))){
-                readData=dataMem[i].second;
+        // Hazard detection: load-use stall
+        // If ID needs a source (rs or rt) that's the destination of a load in ID_EX (i.e., previous instr is LW),
+        // then stall one cycle: insert bubble into ID/EX, freeze IF/ID (stall IF), and keep PC unchanged.
+        bool loadUseStall = false;
+        if (!id_ex.bubble && id_ex.isMemRead) {
+            int loadDst = id_ex.rd; // destination of LW in ID/EX
+            // if current instruction uses loadDst as source (and loadDst != 0)
+            if (loadDst != 0 && (loadDst == nid.rs || loadDst == nid.rt)) {
+                loadUseStall = true;
             }
         }
+
+        if (loadUseStall) {
+            // Insert bubble in new_id_ex, and cause IF stage to stall (ID will request stall)
+            new_id_ex = ID_EX(); // bubble
+            // also need to freeze IF/ID by keeping new_if_id = current if_id in IF_stage via stall flag
+            return true;
+        }
+
+        // Branch handling: simple approach - resolve branch in ID (assume branch target known here)
+        if (nid.isBranch) {
+            // BEQ: if regs equal -> branch taken
+            if (nid.rs_val == nid.rt_val) {
+                // taken: set PC = target (pc + imm) and flush IF stage (next instruction)
+                pc = nid.pc + 1 + nid.imm; // imm is relative offset (in instructions)
+                // flush IF/ID (we already advanced PC in IF stage normally, so we overwrite)
+                flush_next_if = true;
+            }
+            // If branch not taken we do nothing special (PC already advanced)
+        }
+
+        // all good, write into new_id_ex
+        new_id_ex = nid;
+        return false;
     }
-    else if(MemWrite==1){
-        for(int i=0;i<dataMem.size();i++){
-            if(dataMem[i].first==to_string((binaryToDecimal(address)))){
-                dataMem[i].second=writeData;
+
+    // EX stage: ALU ops, apply forwarding
+    void EX_stage() {
+        new_ex_mem = EX_MEM();
+        if (id_ex.bubble) { new_ex_mem.bubble = true; return; }
+
+        Instr ins = id_ex.instr;
+        EX_MEM nex;
+        nex.bubble = false;
+        nex.instr = ins;
+        nex.pc = id_ex.pc;
+        // default control signals propagated
+        nex.isRegWrite = id_ex.isRegWrite;
+        nex.isMemRead = id_ex.isMemRead;
+        nex.isMemWrite = id_ex.isMemWrite;
+        nex.isMemToReg = id_ex.isMemToReg;
+        // destination register for writes: for R-type rd, for I-type rd (we use rd field for ADDI/LW)
+        nex.rd = id_ex.rd;
+
+        // Forwarding logic: check EX/MEM and MEM/WB for data hazards
+        int opA = id_ex.rs_val;
+        int opB = id_ex.rt_val;
+
+        // EX/MEM forwarding (highest priority): if EX/MEM will write to a reg that ID/EX needs
+        if (!ex_mem.bubble && ex_mem.isRegWrite && ex_mem.rd != 0) {
+            if (ex_mem.rd == id_ex.rs) {
+                opA = ex_mem.alu_result;
+            }
+            if (ex_mem.rd == id_ex.rt) {
+                opB = ex_mem.alu_result;
             }
         }
-    }
-}
-
-void writeBack(string ALUresult,string data2,string& readData,int MemWrite,int MemRead,int MemtoReg,int RegWrite,int RegDest,string instr){
-    //ALUresult of the pvs fn should be taken as address
-    //data2 is writedata
-    string out="",s="";
-    mux(MemtoReg,ALUresult,readData,out);
-    string out2="";
-    mux(RegDest,sliceString(instr,20,16),sliceString(instr,15,11),out2);
-    if(RegWrite==1)
-    regFile("","",out,out2,s,s,RegWrite);
-}
-void ControlPath(string instr,int* RegDest,int* branch,int* MemRead,int* MemtoReg,string& ALUop,int* MemWrite,int* ALUsrc,int* RegWrite,int* jump){
-    string op=sliceString(instr,31,26);
-    if(op=="000000"){
-        *RegDest=1;*branch=0;*MemRead=0;*MemtoReg=0;*MemWrite=0;*ALUsrc=0;*RegWrite=1;*jump=0;
-        if(rfunction(instr)=="100000")
-            ALUop="00";//add
-        if(rfunction(instr)=="100010")
-        ALUop="00";//sub
-        if(rfunction(instr)=="101010")
-        ALUop="00";//slt
-        if(rfunction(instr)=="100100")
-        ALUop="00";//and
-        if(rfunction(instr)=="100101")
-        ALUop="00";//or
-        if(rfunction(instr)=="000000")
-        ALUop="00";//sll
-        if(rfunction(instr)=="001000")
-        ALUop="00";//jr
-        if(rfunction(instr)=="100001")
-        ALUop="00";
-    }
-    else if(op=="100011"){//lw
-        *RegDest=0;*branch=0;*MemRead=1;*MemtoReg=1;ALUop="00";*MemWrite=0;*ALUsrc=1;*RegWrite=1;*jump=0;
-    }
-    else if(op=="101011"){//sw
-        *RegDest=0;*branch=0;*MemRead=0;*MemtoReg=1;ALUop="00";*MemWrite=1;*ALUsrc=1;*RegWrite=0;*jump=0;
-    }
-    else if(op=="000100" || op=="000101"){//beq or bne
-        *RegDest=0;*branch=1;*MemRead=0;*MemtoReg=1;ALUop="01";*MemWrite=0;*ALUsrc=0;*RegWrite=0;*jump=0;
-    }
-    else if(op=="000010"){//jump
-        *RegDest=0;*branch=1;*MemRead=0;*MemtoReg=1;ALUop="01";*MemWrite=0;*ALUsrc=0;*RegWrite=0;*jump=1;
+        // MEM/WB forwarding (next priority)
+        if (!mem_wb.bubble && mem_wb.isRegWrite && mem_wb.rd != 0) {
+            int wb_val = mem_wb.isMemToReg ? mem_wb.mem_data : mem_wb.alu_result;
+            if (mem_wb.rd == id_ex.rs) opA = wb_val;
+            if (mem_wb.rd == id_ex.rt) opB = wb_val;
         }
-    else if(op == "001000"){//addi
-        *RegDest=0;*branch=0;*MemRead=0;*MemtoReg=0;ALUop="01";*MemWrite=0;*ALUsrc=1;*RegWrite=1;*jump=0;
+
+        // ALU operation
+        int alu_in2 = id_ex.isALUSrc ? id_ex.imm : opB;
+        int alu_out = 0;
+        switch (ins.type) {
+            case I_ADD: alu_out = opA + opB; break;
+            case I_SUB: alu_out = opA - opB; break;
+            case I_ADDI: alu_out = opA + id_ex.imm; break;
+            case I_LW:
+            case I_SW:
+                alu_out = opA + id_ex.imm; // address calc
+                break;
+            default:
+                break;
+        }
+
+        nex.alu_result = alu_out;
+        nex.rt_val = opB; // for store
+        new_ex_mem = nex;
     }
-    
-}
-int main(){
-    int clock=0;
-    vector<string>instrs;
-    vector<pair<string,string> >instrMem;
-    string s;
-    string PC,ALUop,read1,read2,data1,data2,writeData,writeReg,sign_extend,ALUresult="",PC_bar="",readData;
-    cout<<"Enter 'Factorial' or 'Sort'"<<endl;
-    cin>>s;
-    if(s=="Factorial"){
-        PC="4194356";
-        instrMem=instrMem2;
+
+    // MEM stage: memory access
+    void MEM_stage() {
+        new_mem_wb = MEM_WB();
+        if (ex_mem.bubble) { new_mem_wb.bubble = true; return; }
+
+        Instr ins = ex_mem.instr;
+        MEM_WB nmem;
+        nmem.bubble = false;
+        nmem.instr = ins;
+        nmem.pc = ex_mem.pc;
+        nmem.alu_result = ex_mem.alu_result;
+        nmem.rd = ex_mem.rd;
+        nmem.isRegWrite = ex_mem.isRegWrite;
+        nmem.isMemToReg = ex_mem.isMemToReg;
+
+        if (ex_mem.isMemRead) {
+            int addr = ex_mem.alu_result;
+            if (addr >= 0 && addr < (int)dmem.size())
+                nmem.mem_data = dmem[addr];
+            else
+                nmem.mem_data = 0;
+        } else if (ex_mem.isMemWrite) {
+            int addr = ex_mem.alu_result;
+            if (addr >= 0 && addr < (int)dmem.size())
+                dmem[addr] = ex_mem.rt_val;
+        }
+
+        new_mem_wb = nmem;
     }
-    if(s=="Sort"){
-        PC="4194380";
-        instrMem=instrMem1;
+
+    // WB stage: writeback to register file
+    void WB_stage() {
+        if (mem_wb.bubble) return;
+        if (mem_wb.instr.type == I_HALT) {
+            halted = true;
+            return;
+        }
+        if (mem_wb.isRegWrite && mem_wb.rd != 0) {
+            int val = mem_wb.isMemToReg ? mem_wb.mem_data : mem_wb.alu_result;
+            regs[mem_wb.rd] = val;
+        }
     }
-    int RegDest,branch,MemRead,MemtoReg,MemWrite,ALUsrc,RegWrite,jump,Zero,zero,i=0;
-    while(1){
-        if(s=="Sort")
-        if(PC=="4194536")
-        break;
-        if(s=="Factorial")
-        if(PC=="4194408")
-        break;
-    instrs.push_back(fetch(PC,instrMem));
-    clock++;
-    ControlPath(instrs[i],&RegDest,&branch,&MemRead,&MemtoReg,ALUop,&MemWrite,&ALUsrc,&RegWrite,&jump);
-    decode(instrs[i],data1,data2,sign_extend,RegDest,writeData,RegWrite);
-    clock++;
-    execute(&zero,sign_extend,data1,data2,ALUop,ALUsrc,&Zero,ALUresult,PC,branch,instrs[i],jump,PC_bar);
-    clock++;
-    int k=binaryToDecimal(PC_bar);
-    PC=to_string(k);
-    Mem(ALUresult,data2,readData,MemWrite,MemRead);
-    clock++;    
-    writeBack(ALUresult,data2,readData,MemWrite,MemRead,MemtoReg,RegWrite,RegDest,instrs[i]);
-    clock++;
-    i++;
+
+    // Step: perform one cycle (WB->MEM->EX->ID->IF), compute new pipeline regs then update
+    void step_cycle(int cycle) {
+        // 1. WB stage
+        WB_stage();
+
+        // 2. MEM stage
+        MEM_stage();
+
+        // 3. EX stage
+        EX_stage();
+
+        // 4. ID stage (may request stall or flush)
+        bool flush_next_if = false;
+        bool stallIF = ID_stage(flush_next_if);
+
+        // 5. IF stage (consider stall)
+        IF_stage(stallIF);
+
+        // If branch taken in ID, flush IF/ID by marking bubble
+        if (flush_next_if) {
+            new_if_id.bubble = true;
+        }
+
+        // Now update pipeline registers at clock edge
+        if_id = new_if_id;
+        id_ex = new_id_ex;
+        ex_mem = new_ex_mem;
+        mem_wb = new_mem_wb;
+
+        // If HALT in pipeline and has reached WB, halted will be set in WB
+        // Print status for debugging
+        cout << "Cycle " << cycle << " PC=" << pc
+             << " IF_ID.bubble=" << if_id.bubble
+             << " ID_EX.bubble=" << id_ex.bubble
+             << " EX_MEM.bubble=" << ex_mem.bubble
+             << " MEM_WB.bubble=" << mem_wb.bubble << "\n";
     }
-    cout<<"Register values:"<<endl;
-    for(int i=0;i<regValues.size();i++){
-        cout<<regValues[i].first<<" : "<<binaryToDecimal(regValues[i].second)<<endl;
+
+    // run simulation until halted or max cycles
+    void run(int max_cycles=200) {
+        int cyc=0;
+        // Initialize IF stage to fetch from PC=0
+        new_if_id.bubble = true;
+        if_id.bubble = true;
+        id_ex.bubble = true;
+        ex_mem.bubble = true;
+        mem_wb.bubble = true;
+
+        while (!halted && cyc < max_cycles) {
+            step_cycle(cyc);
+            cyc++;
+        }
+        cout << "Simulation ended at cycle " << cyc << " halted=" << halted << "\n";
+        // dump registers
+        cout << "Registers:\n";
+        for (int i=0;i<8;i++) {
+            cout << "R" << i << "=" << regs[i] << " ";
+        }
+        cout << "\nMemory (first 16):\n";
+        for (int i=0;i<16;i++) cout << dmem[i] << " ";
+        cout << "\n";
     }
-    cout<<""<<endl;
-    cout<<"Data Memory:"<<endl;
-    for(int i=0;i<dataMem.size();i++){
-        cout<<dataMem[i].first<<" : "<<binaryToDecimal(dataMem[i].second)<<endl;
-    }
-    cout<<""<<endl;
-    cout<<"CLOCK: "<<clock<<endl;
+};
+
+// Helper to create instructions easily
+Instr make_add(int rd,int rs,int rt) { Instr i; i.type=I_ADD; i.rd=rd;i.rs=rs;i.rt=rt;return i; }
+Instr make_sub(int rd,int rs,int rt) { Instr i; i.type=I_SUB; i.rd=rd;i.rs=rs;i.rt=rt;return i; }
+Instr make_addi(int rd,int rs,int imm) { Instr i; i.type=I_ADDI; i.rd=rd;i.rs=rs;i.imm=imm;return i; }
+Instr make_lw(int rd,int offset,int rs) { Instr i; i.type=I_LW; i.rd=rd;i.rs=rs;i.imm=offset; return i;}
+Instr make_sw(int rt,int offset,int rs) { Instr i; i.type=I_SW; i.rt=rt;i.rs=rs;i.imm=offset; return i;}
+Instr make_beq(int rs,int rt,int offset) { Instr i; i.type=I_BEQ; i.rs=rs;i.rt=rt;i.imm=offset; return i;}
+Instr make_nop() { Instr i; i.type=I_NOP; return i; }
+Instr make_halt() { return Instr::halt(); }
+
+int main() {
+    CPU cpu(64, 256);
+
+    // Example program:
+    // R0 always zero. We'll do:
+    // ADDI R1, R0, 10    ; R1 = 10
+    // ADDI R2, R0, 20    ; R2 = 20
+    // ADD  R3, R1, R2    ; R3 = 30
+    // SW   R3, 0(R0)     ; MEM[0] = 30
+    // LW   R4, 0(R0)     ; R4 = 30 (load-use hazard after SW won't cause stall since SW does not create load)
+    // BEQ  R4, R3, 2     ; branch taken? yes -> skip next ADDI (example)
+    // ADDI R5, R0, 7     ; (may be skipped)
+    // HALT
+    vector<Instr> prog = {
+        make_addi(1, 0, 10),
+        make_addi(2, 0, 20),
+        make_add(3,1,2),
+        make_sw(3, 0, 0),
+        make_lw(4, 0, 0),
+        make_beq(4,3,2),   // if equal jump forward by 2 (skip next instr)
+        make_addi(5,0,7),
+        make_halt()
+    };
+
+    cpu.load_program(prog);
+    cpu.run(200);
+
+    return 0;
 }
